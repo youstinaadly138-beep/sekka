@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>سكة</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 20px;
+      color: #222;
+    }
+    .card {
+      max-width: 460px;
+      margin: 24px auto;
+      background: #fff;
+      padding: 22px;
+      border-radius: 14px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+    h2 { margin-top: 0; color: #1f3c88; }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #1f3c88;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+    button:hover { background: #162b63; }
+    .secondary-btn {
+      background: #e2e8f0;
+      color: #1e293b;
+      margin-bottom: 14px;
+    }
+    .secondary-btn:hover { background: #cbd5e1; }
+    .hidden { display: none; }
+    .course-box, .episode-item {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #fafcff;
+    }
+    .episode-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .episode-item button {
+      width: auto;
+      padding: 8px 14px;
+      font-size: 13px;
+      margin-top: 0;
+    }
+    .yt-link {
+      text-decoration: none;
+      background: #e2e8f0;
+      color: #1e293b;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      display: inline-block;
+    }
+    .yt-link:hover { background: #cbd5e1; }
+    .video-box {
+      margin-top: 14px;
+      background: #0f172a;
+      color: #fff;
+      padding: 12px;
+      border-radius: 10px;
+    }
+    iframe {
+      width: 100%;
+      height: 220px;
+      border: none;
+      border-radius: 8px;
+      margin-top: 8px;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. شاشة تسجيل الدخول -->
+  <div id="loginScreen" class="card">
+    <h2>سكة</h2>
+    <p>أهلاً بك في تطبيق الاجتماع والحلقات الأسبوعية</p>
+    <label>الاسم أو البريد الإلكتروني</label>
+    <input type="text" id="userInput" placeholder="اكتب اسمك أو إيميلك" />
+    <label>كلمة المرور</label>
+    <input type="password" id="passInput" placeholder="••••••••" />
+    <button onclick="login()">دخول</button>
+  </div>
+
+  <!-- 2. شاشة الكورسات -->
+  <div id="homeScreen" class="card hidden">
+    <h2>سكة - الكورسات والمواضيع</h2>
+    <p id="welcomeText"></p>
+
+    <div class="course-box">
+      <strong>كورس الموضوع الأول</strong>
+      <p>مواضيع الاجتماع وحلقاته المرتبة</p>
+      <button onclick="openCourse('كورس الموضوع الأول')">فتح الكورس</button>
+    </div>
+
+    <div class="course-box">
+      <strong>سلسلة الحلقات الأسبوعية</strong>
+      <p>أحدث الحلقات على مستوى القاهرة</p>
+      <button onclick="openCourse('سلسلة الحلقات الأسبوعية')">فتح السلسلة</button>
+    </div>
+  </div>
+
+  <!-- 3. شاشة داخل الكورس والحلقات -->
+  <div id="courseScreen" class="card hidden">
+    <button class="secondary-btn" onclick="backToCourses()">← رجوع للكورسات</button>
+    <h2 id="courseTitle"></h2>
+    <p>اختر حلقة لتشغيلها:</p>
+
+    <div id="episodesList"></div>
+
+    <div id="playerBox" class="video-box hidden">
+      <strong id="nowPlayingTitle">مشغل الفيديو</strong>
+      <iframe id="videoFrame" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <script>
+    const courseData = {
+      "كورس الموضوع الأول": [
+        { title: "الحلقة 1: مقدمة الموضوع", embedUrl: "https://www.youtube.com/embed/qELDX26mRm0" },
+        { title: "الحلقة 2: تفاصيل أعمق", embedUrl: "https://www.youtube.com/embed/y4r0AufKkHs" }
+      ],
+      "سلسلة الحلقات الأسبوعية": [
+        { title: "حلقة هذا الأسبوع", embedUrl: "https://www.youtube.com/embed/y4r0AufKkHs" },
+        { title: "حلقة الأسبوع الماضي", embedUrl: "https://www.youtube.com/embed/qELDX26mRm0" }
+      ]
+    };
+
+    function login() {
+      const name = document.getElementById("userInput").value.trim() || "عضو الاجتماع";
+      document.getElementById("loginScreen").classList.add("hidden");
+      document.getElementById("homeScreen").classList.remove("hidden");
+      document.getElementById("welcomeText").innerText = "أهلاً بك يا " + name;
+    }
+
+    function openCourse(courseName) {
+      document.getElementById("homeScreen").classList.add("hidden");
+      document.getElementById("courseScreen").classList.remove("hidden");
+      document.getElementById("courseTitle").innerText = courseName;
+      document.getElementById("playerBox").classList.add("hidden");
+      document.getElementById("videoFrame").src = "";
+
+      const listContainer = document.getElementById("episodesList");
+      listContainer.innerHTML = "";
+
+      const episodes = courseData[courseName] || [];
+      episodes.forEach(ep => {
+        const videoId = ep.embedUrl.split("/embed/")[1]?.split("?")[0] || "";
+        const watchUrl = videoId ? "https://www.youtube.com/watch?v=" + videoId : ep.embedUrl;
+
+        const div = document.createElement("div");
+        div.className = "episode-item";
+        div.innerHTML = `
+          <span>${ep.title}</span>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button onclick="playEpisode('${ep.title.replace(/'/g, "\\'")}', '${ep.embedUrl}')">تشغيل</button>
+            <a class="yt-link" href="${watchUrl}" target="_blank">فتح بيوتيوب</a>
+          </div>
+        `;
+        listContainer.appendChild(div);
+      });
+    }
+
+    function playEpisode(title, url) {
+      document.getElementById("playerBox").classList.remove("hidden");
+      document.getElementById("nowPlayingTitle").innerText = "يتم الآن عرض: " + title;
+      document.getElementById("videoFrame").src = url;
+    }
+
+    function backToCourses() {
+      document.getElementById("videoFrame").src = "";
+      document.getElementById("playerBox").classList.add("hidden");
+      document.getElementById("courseScreen").classList.add("hidden");
+      document.getElementById("homeScreen").classList.remove("hidden");
+    }
+  </script>
+</body>
+</html>
