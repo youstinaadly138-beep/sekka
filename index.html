@@ -3,201 +3,817 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>سكة</title>
+  <title>SEKKA | سكة</title>
+  <script src="daily-verses.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f9;
-      margin: 0;
-      padding: 20px;
-      color: #222;
+    :root {
+      --bg: #f6f4ef;
+      --surface: #ffffff;
+      --surface-soft: #fbfaf7;
+      --text: #1c222b;
+      --muted: #626b78;
+      --primary: #1f4e5f;
+      --primary-dark: #153743;
+      --accent: #b8863b;
+      --accent-soft: #fdf7ec;
+      --border: #e5e0d5;
+      --shadow: 0 8px 24px rgba(20, 30, 40, 0.06);
+      --radius: 16px;
     }
-    .card {
-      max-width: 460px;
-      margin: 24px auto;
-      background: #fff;
-      padding: 22px;
-      border-radius: 14px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    }
-    h2 { margin-top: 0; color: #1f3c88; }
-    input {
-      width: 100%;
-      padding: 12px;
-      margin: 8px 0 14px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+
+    * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
-    button {
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      min-height: 100vh;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* ==================== صفحة التسجيل (مرة واحدة) ==================== */
+    .registration-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: linear-gradient(160deg, #1f4e5f 0%, #122c36 100%);
+    }
+
+    .reg-card {
       width: 100%;
-      padding: 12px;
-      background: #1f3c88;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-size: 15px;
-      cursor: pointer;
-      margin-top: 6px;
+      max-width: 440px;
+      background: var(--surface);
+      border-radius: 22px;
+      padding: 28px 22px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
     }
-    button:hover { background: #162b63; }
-    .secondary-btn {
-      background: #e2e8f0;
-      color: #1e293b;
+
+    .brand-badge {
+      display: inline-block;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid #eedcb9;
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+    }
+
+    .reg-card h1 {
+      font-size: 1.5rem;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    .reg-card p.subtitle {
+      font-size: 0.92rem;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .form-group {
       margin-bottom: 14px;
     }
-    .secondary-btn:hover { background: #cbd5e1; }
-    .hidden { display: none; }
-    .course-box, .episode-item {
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 12px;
-      margin-bottom: 10px;
-      background: #fafcff;
+
+    .form-group label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text);
     }
-    .episode-item {
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-size: 0.96rem;
+      background: var(--surface-soft);
+      color: var(--text);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: var(--surface);
+      box-shadow: 0 0 0 3px rgba(31, 78, 95, 0.12);
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 13px 18px;
+      border: none;
+      border-radius: 12px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.99);
+    }
+
+    .reg-note {
+      margin-top: 12px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* ==================== شريط علوي + قائمة جانبية ==================== */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
       display: flex;
+      align-items: center;
       justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .menu-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+      color: var(--text);
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .app-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .user-chip {
+      font-size: 0.82rem;
+      color: var(--primary);
+      background: #eaf2f5;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+      max-width: 140px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 30, 0.45);
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .drawer-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .side-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(290px, 82vw);
+      height: 100vh;
+      background: var(--surface);
+      z-index: 60;
+      padding: 20px 16px;
+      box-shadow: -8px 0 28px rgba(0, 0, 0, 0.14);
+      transform: translateX(100%);
+      transition: transform 0.28s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .side-drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 14px;
+    }
+
+    .drawer-header strong {
+      font-size: 1.1rem;
+      color: var(--primary);
+    }
+
+    .close-drawer-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .nav-btn {
+      width: 100%;
+      text-align: right;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 0.98rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
       align-items: center;
       gap: 10px;
+      transition: background 0.2s, color 0.2s;
     }
-    .episode-item button {
-      width: auto;
-      padding: 8px 14px;
-      font-size: 13px;
-      margin-top: 0;
+
+    .nav-btn:hover {
+      background: var(--surface-soft);
     }
-    .yt-link {
-      text-decoration: none;
-      background: #e2e8f0;
-      color: #1e293b;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 13px;
-      display: inline-block;
+
+    .nav-btn.active {
+      background: #e7f0f3;
+      color: var(--primary);
     }
-    .yt-link:hover { background: #cbd5e1; }
-    .video-box {
-      margin-top: 14px;
-      background: #0f172a;
-      color: #fff;
-      padding: 12px;
-      border-radius: 10px;
+
+    .drawer-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
     }
-    iframe {
+
+    .secondary-btn {
       width: 100%;
-      height: 220px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* ==================== محتوى الصفحات ==================== */
+    .main-container {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 18px 16px 40px;
+    }
+
+    .section-block {
+      margin-bottom: 24px;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .section-heading h2 {
+      font-size: 1.15rem;
+      color: var(--text);
+    }
+
+    .section-heading span {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    /* بطاقة آية اليوم والشرح الروحي */
+    .daily-verse-card {
+      background: linear-gradient(145deg, #ffffff 0%, #fdf8ee 100%);
+      border: 1px solid #ead9b7;
+      border-radius: 20px;
+      padding: 20px 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .verse-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .verse-tag {
+      background: var(--accent-soft);
+      color: #8f621e;
+      border: 1px solid #e7cfa0;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .verse-date {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .verse-text {
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: #162830;
+      margin-bottom: 8px;
+    }
+
+    .verse-ref {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+
+    .reflection-box {
+      background: rgba(255, 255, 255, 0.85);
+      border-right: 4px solid var(--primary);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+
+    .reflection-title {
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .reflection-text {
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    /* كروت الكورسات والبودكاست */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    @media (min-width: 640px) {
+      .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .item-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .item-card h3 {
+      font-size: 1.03rem;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    .item-card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .item-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: var(--muted);
+      padding-top: 10px;
+      border-top: 1px solid #f0ece3;
+    }
+
+    .pill-btn {
+      display: inline-block;
+      text-decoration: none;
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: 10px;
       border: none;
-      border-radius: 8px;
-      margin-top: 8px;
-      background: #000;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-  <!-- 1. شاشة تسجيل الدخول -->
-  <div id="loginScreen" class="card">
-    <h2>سكة</h2>
-    <p>أهلاً بك في تطبيق الاجتماع والحلقات الأسبوعية</p>
-    <label>الاسم أو البريد الإلكتروني</label>
-    <input type="text" id="userInput" placeholder="اكتب اسمك أو إيميلك" />
-    <label>كلمة المرور</label>
-    <input type="password" id="passInput" placeholder="••••••••" />
-    <button onclick="login()">دخول</button>
-  </div>
+  <!-- ==================== 1. شاشة تسجيل البيانات (مرة واحدة) ==================== -->
+  <section id="registrationScreen" class="registration-screen hidden">
+    <div class="reg-card">
+      <div class="brand-badge">SEKKA • سكة</div>
+      <h1>أهلاً بكِ في التطبيق</h1>
+      <p class="subtitle">سجّلي بياناتك مرة واحدة فقط للبدء، ولن يُطلب منكِ إدخالها مرة أخرى على هذا الجهاز.</p>
 
-  <!-- 2. شاشة الكورسات -->
-  <div id="homeScreen" class="card hidden">
-    <h2>سكة - الكورسات والمواضيع</h2>
-    <p id="welcomeText"></p>
+      <form id="registrationForm">
+        <div class="form-group">
+          <label for="userName">الاسم</label>
+          <input type="text" id="userName" name="userName" placeholder="اكتبي اسمكِ الكامل" required />
+        </div>
 
-    <div class="course-box">
-      <strong>كورس الموضوع الأول</strong>
-      <p>مواضيع الاجتماع وحلقاته المرتبة</p>
-      <button onclick="openCourse('كورس الموضوع الأول')">فتح الكورس</button>
+        <div class="form-group">
+          <label for="userEmail">البريد الإلكتروني</label>
+          <input type="email" id="userEmail" name="userEmail" placeholder="example@gmail.com" required />
+        </div>
+
+        <div class="form-group">
+          <label for="userPhone">رقم التليفون</label>
+          <input type="tel" id="userPhone" name="userPhone" placeholder="01xxxxxxxxx" required />
+        </div>
+
+        <div class="form-group">
+          <label for="userArea">المنطقة</label>
+          <input type="text" id="userArea" name="userArea" placeholder="مثال: القاهرة / الجيزة / ..." required />
+        </div>
+
+        <button type="submit" class="btn-primary">حفظ والمتابعة</button>
+      </form>
+
+      <p class="reg-note">يتم حفظ حالة التسجيل محلياً على جهازكِ لعدم تكرار النموذج.</p>
     </div>
+  </section>
 
-    <div class="course-box">
-      <strong>سلسلة الحلقات الأسبوعية</strong>
-      <p>أحدث الحلقات على مستوى القاهرة</p>
-      <button onclick="openCourse('سلسلة الحلقات الأسبوعية')">فتح السلسلة</button>
-    </div>
-  </div>
+  <!-- ==================== 2. التطبيق الرئيسي ==================== -->
+  <div id="appShell" class="hidden">
+    <header class="topbar">
+      <div class="topbar-right">
+        <button id="openDrawerBtn" class="menu-btn" type="button" aria-label="فتح القائمة">☰</button>
+        <span class="app-title">SEKKA</span>
+      </div>
+      <div id="userGreetingChip" class="user-chip">أهلاً بكِ</div>
+    </header>
 
-  <!-- 3. شاشة داخل الكورس والحلقات -->
-  <div id="courseScreen" class="card hidden">
-    <button class="secondary-btn" onclick="backToCourses()">← رجوع للكورسات</button>
-    <h2 id="courseTitle"></h2>
-    <p>اختر حلقة لتشغيلها:</p>
+    <!-- خلفية وقائمة جانبية منزلقة -->
+    <div id="drawerBackdrop" class="drawer-backdrop"></div>
+    <aside id="sideDrawer" class="side-drawer" aria-label="القائمة الجانبية">
+      <div>
+        <div class="drawer-header">
+          <strong>أقسام التطبيق</strong>
+          <button id="closeDrawerBtn" class="close-drawer-btn" type="button" aria-label="إغلاق القائمة">✕</button>
+        </div>
 
-    <div id="episodesList"></div>
+        <ul class="nav-list">
+          <li>
+            <button class="nav-btn active" data-page="home" type="button">
+              <span>🏠</span>
+              <span>الصفحة الرئيسية</span>
+            </button>
+          </li>
+          <li>
+            <button class="nav-btn" data-page="courses" type="button">
+              <span>📚</span>
+              <span>الكورسات</span>
+            </button>
+          </li>
+          <li>
+            <button class="nav-btn" data-page="podcast" type="button">
+              <span>🎧</span>
+              <span>البودكاست</span>
+            </button>
+          </li>
+        </ul>
+      </div>
 
-    <div id="playerBox" class="video-box hidden">
-      <strong id="nowPlayingTitle">مشغل الفيديو</strong>
-      <iframe id="videoFrame" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-    </div>
+      <div class="drawer-footer">
+        <button id="editRegistrationBtn" class="secondary-btn" type="button">
+          تعديل بيانات التسجيل
+        </button>
+      </div>
+    </aside>
+
+    <!-- المحتوى المتغير حسب القسم المختار -->
+    <main class="main-container">
+
+      <!-- الصفحة الرئيسية: آية اليوم + الشرح الروحي من فوق، وتحتها الكورسات -->
+      <section id="page-home" class="page-view">
+        <div class="section-block">
+          <div class="daily-verse-card">
+            <div class="verse-top-row">
+              <span class="verse-tag">✦ آية اليوم وتأمل روحي</span>
+              <span id="todayDateLabel" class="verse-date"></span>
+            </div>
+
+            <div id="dailyVerseText" class="verse-text"></div>
+            <div id="dailyVerseRef" class="verse-ref"></div>
+
+            <div class="reflection-box">
+              <div class="reflection-title">شرح وتأمل روحي</div>
+              <p id="dailyVerseReflection" class="reflection-text"></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-heading">
+            <h2>الكورسات</h2>
+            <span>متاحة الآن</span>
+          </div>
+          <div id="homeCoursesGrid" class="cards-grid"></div>
+        </div>
+      </section>
+
+      <!-- صفحة الكورسات المستقلة -->
+      <section id="page-courses" class="page-view hidden">
+        <div class="section-block">
+          <div class="section-heading">
+            <h2>جميع الكورسات</h2>
+            <span>اختاري الكورس المناسب لكِ</span>
+          </div>
+          <div id="allCoursesGrid" class="cards-grid"></div>
+        </div>
+      </section>
+
+      <!-- صفحة البودكاست -->
+      <section id="page-podcast" class="page-view hidden">
+        <div class="section-block">
+          <div class="section-heading">
+            <h2>البودكاست</h2>
+            <span>حلقات صوتية وتأملات</span>
+          </div>
+          <div id="podcastGrid" class="cards-grid"></div>
+        </div>
+      </section>
+
+    </main>
   </div>
 
   <script>
-    const courseData = {
-      "كورس الموضوع الأول": [
-        { title: "الحلقة 1: مقدمة الموضوع", embedUrl: "https://www.youtube.com/embed/qELDX26mRm0" },
-        { title: "الحلقة 2: تفاصيل أعمق", embedUrl: "https://www.youtube.com/embed/y4r0AufKkHs" }
-      ],
-      "سلسلة الحلقات الأسبوعية": [
-        { title: "حلقة هذا الأسبوع", embedUrl: "https://www.youtube.com/embed/y4r0AufKkHs" },
-        { title: "حلقة الأسبوع الماضي", embedUrl: "https://www.youtube.com/embed/qELDX26mRm0" }
-      ]
-    };
+    const STORAGE_KEY_REGISTERED = "sekka_user_registered_v1";
+    const STORAGE_KEY_PROFILE = "sekka_user_profile_v1";
 
-    function login() {
-      const name = document.getElementById("userInput").value.trim() || "عضو الاجتماع";
-      document.getElementById("loginScreen").classList.add("hidden");
-      document.getElementById("homeScreen").classList.remove("hidden");
-      document.getElementById("welcomeText").innerText = "أهلاً بك يا " + name;
+    const COURSES_DATA = [
+      {
+        title: "كورس الأساسيات وبداية الطريق",
+        description: "مدخل مرتب ومبسط يشرح الخطوات الأساسية ويجهزكِ للانطلاق بثبات.",
+        duration: "6 دروس",
+        link: "#"
+      },
+      {
+        title: "تنظيم الوقت والتركيز اليومي",
+        description: "أدوات عملية لترتيب الأولويات اليومية وتقليل التشتت في الشغل والحياة.",
+        duration: "5 دروس",
+        link: "#"
+      },
+      {
+        title: "التواصل الفعّال وبناء الثقة",
+        description: "مهارات الحوار الواضح والاستماع الجيد والتعامل بثقة في المواقف المختلفة.",
+        duration: "4 دروس",
+        link: "#"
+      },
+      {
+        title: "الاستمرارية وتحقيق الأهداف",
+        description: "إزاي تحافظي على حماسكِ وتكملي اللي بدأتيه حتى بعد انتهاء الحماس الأول.",
+        duration: "5 دروس",
+        link: "#"
+      }
+    ];
+
+    const PODCAST_DATA = [
+      {
+        title: "حلقة 1: لماذا نبدأ من جديد؟",
+        description: "حديث هادئ عن البدايات الصادقة وكيف نتجاوز فترات التردد.",
+        duration: "18 دقيقة",
+        link: "#"
+      },
+      {
+        title: "حلقة 2: هدوء القلب وسط الزحمة",
+        description: "تأملات عملية للحفاظ على اتزانكِ النفسي والروحي في الأيام المزدحمة.",
+        duration: "22 دقيقة",
+        link: "#"
+      },
+      {
+        title: "حلقة 3: قيمة الخطوات الصغيرة",
+        description: "كيف تصنع الخطوات اليومية البسيطة فرقاً كبيراً على المدى الطويل.",
+        duration: "15 دقيقة",
+        link: "#"
+      }
+    ];
+
+    const registrationScreen = document.getElementById("registrationScreen");
+    const registrationForm = document.getElementById("registrationForm");
+    const appShell = document.getElementById("appShell");
+    const userGreetingChip = document.getElementById("userGreetingChip");
+
+    const openDrawerBtn = document.getElementById("openDrawerBtn");
+    const closeDrawerBtn = document.getElementById("closeDrawerBtn");
+    const sideDrawer = document.getElementById("sideDrawer");
+    const drawerBackdrop = document.getElementById("drawerBackdrop");
+    const editRegistrationBtn = document.getElementById("editRegistrationBtn");
+
+    const navButtons = document.querySelectorAll(".nav-btn");
+    const pageViews = document.querySelectorAll(".page-view");
+
+    function getDayOfYear(date = new Date()) {
+      const start = new Date(date.getFullYear(), 0, 0);
+      const diff =
+        date -
+        start +
+        (start.getTimezoneOffset() - date.getTimezoneOffset()) * 60 * 1000;
+      const oneDay = 1000 * 60 * 60 * 24;
+      return Math.floor(diff / oneDay);
     }
 
-    function openCourse(courseName) {
-      document.getElementById("homeScreen").classList.add("hidden");
-      document.getElementById("courseScreen").classList.remove("hidden");
-      document.getElementById("courseTitle").innerText = courseName;
-      document.getElementById("playerBox").classList.add("hidden");
-      document.getElementById("videoFrame").src = "";
+    function renderDailyVerse() {
+      const versesList = typeof DAILY_VERSES !== "undefined" && Array.isArray(DAILY_VERSES) && DAILY_VERSES.length
+        ? DAILY_VERSES
+        : [
+            {
+              verse: "«الرَّبُّ رَاعِيَّ فَلاَ يُعْوِزُنِي شَيْءٌ.»",
+              reference: "مزمور 23 : 1",
+              reflection: "لما يكون ربنا هو اللي بياخد باله منك، مفيش حاجة حقيقية هتقع منك."
+            }
+          ];
 
-      const listContainer = document.getElementById("episodesList");
-      listContainer.innerHTML = "";
+      const now = new Date();
+      const dayNumber = getDayOfYear(now);
+      const index = dayNumber % versesList.length;
+      const item = versesList[index];
 
-      const episodes = courseData[courseName] || [];
-      episodes.forEach(ep => {
-        const videoId = ep.embedUrl.split("/embed/")[1]?.split("?")[0] || "";
-        const watchUrl = videoId ? "https://www.youtube.com/watch?v=" + videoId : ep.embedUrl;
+      document.getElementById("dailyVerseText").textContent = item.verse;
+      document.getElementById("dailyVerseRef").textContent = item.reference;
+      document.getElementById("dailyVerseReflection").textContent = item.reflection;
 
-        const div = document.createElement("div");
-        div.className = "episode-item";
-        div.innerHTML = `
-          <span>${ep.title}</span>
-          <div style="display:flex; gap:6px; flex-wrap:wrap;">
-            <button onclick="playEpisode('${ep.title.replace(/'/g, "\\'")}', '${ep.embedUrl}')">تشغيل</button>
-            <a class="yt-link" href="${watchUrl}" target="_blank">فتح بيوتيوب</a>
-          </div>
-        `;
-        listContainer.appendChild(div);
+      document.getElementById("todayDateLabel").textContent = now.toLocaleDateString("ar-EG", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
       });
     }
 
-    function playEpisode(title, url) {
-      document.getElementById("playerBox").classList.remove("hidden");
-      document.getElementById("nowPlayingTitle").innerText = "يتم الآن عرض: " + title;
-      document.getElementById("videoFrame").src = url;
+    function renderCards(containerId, items, actionLabel) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      container.innerHTML = items
+        .map(
+          (item) => `
+          <article class="item-card">
+            <div>
+              <h3>${item.title}</h3>
+              <p>${item.description}</p>
+            </div>
+            <div class="item-meta">
+              <span>${item.duration}</span>
+              <a class="pill-btn" href="${item.link}">${actionLabel}</a>
+            </div>
+          </article>
+        `
+        )
+        .join("");
     }
 
-    function backToCourses() {
-      document.getElementById("videoFrame").src = "";
-      document.getElementById("playerBox").classList.add("hidden");
-      document.getElementById("courseScreen").classList.add("hidden");
-      document.getElementById("homeScreen").classList.remove("hidden");
+    function openDrawer() {
+      sideDrawer.classList.add("open");
+      drawerBackdrop.classList.add("open");
     }
+
+    function closeDrawer() {
+      sideDrawer.classList.remove("open");
+      drawerBackdrop.classList.remove("open");
+    }
+
+    function switchPage(pageName) {
+      pageViews.forEach((view) => {
+        view.classList.toggle("hidden", view.id !== `page-${pageName}`);
+      });
+
+      navButtons.forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.page === pageName);
+      });
+
+      closeDrawer();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function showRegistration(prefill = null) {
+      appShell.classList.add("hidden");
+      registrationScreen.classList.remove("hidden");
+
+      if (prefill) {
+        document.getElementById("userName").value = prefill.name || "";
+        document.getElementById("userEmail").value = prefill.email || "";
+        document.getElementById("userPhone").value = prefill.phone || "";
+        document.getElementById("userArea").value = prefill.area || "";
+      }
+    }
+
+    function showMainApp(profile) {
+      registrationScreen.classList.add("hidden");
+      appShell.classList.remove("hidden");
+
+      if (profile && profile.name) {
+        userGreetingChip.textContent = `أهلاً، ${profile.name.split(" ")[0]}`;
+      }
+
+      renderDailyVerse();
+      renderCards("homeCoursesGrid", COURSES_DATA, "فتح الكورس");
+      renderCards("allCoursesGrid", COURSES_DATA, "فتح الكورس");
+      renderCards("podcastGrid", PODCAST_DATA, "استماع");
+    }
+
+    registrationForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const profile = {
+        name: document.getElementById("userName").value.trim(),
+        email: document.getElementById("userEmail").value.trim(),
+        phone: document.getElementById("userPhone").value.trim(),
+        area: document.getElementById("userArea").value.trim(),
+        savedAt: new Date().toISOString()
+      };
+
+      localStorage.setItem(STORAGE_KEY_REGISTERED, "true");
+      localStorage.setItem(STORAGE_KEY_PROFILE, JSON.stringify(profile));
+
+      showMainApp(profile);
+    });
+
+    editRegistrationBtn.addEventListener("click", () => {
+      closeDrawer();
+      const savedProfile = JSON.parse(localStorage.getItem(STORAGE_KEY_PROFILE) || "null");
+      showRegistration(savedProfile);
+    });
+
+    openDrawerBtn.addEventListener("click", openDrawer);
+    closeDrawerBtn.addEventListener("click", closeDrawer);
+    drawerBackdrop.addEventListener("click", closeDrawer);
+
+    navButtons.forEach((btn) => {
+      btn.addEventListener("click", () => switchPage(btn.dataset.page));
+    });
+
+    (function init() {
+      const isRegistered = localStorage.getItem(STORAGE_KEY_REGISTERED) === "true";
+      const savedProfile = JSON.parse(localStorage.getItem(STORAGE_KEY_PROFILE) || "null");
+
+      if (isRegistered && savedProfile) {
+        showMainApp(savedProfile);
+      } else {
+        showRegistration(savedProfile);
+      }
+    })();
   </script>
 </body>
 </html>
